@@ -1,7 +1,7 @@
 # About
 This is a really lightweight program intended to run daemonised as a systemd service. It will perform configurable checks for activity on the system and, if the system has been idle long enough, will suspend the system.
 
-It's more or less a port from Python to Rust of the [autosuspend](https://github.com/languitar/autosuspend/tree/main) AUR package by [https://github.com/languitar](https://github.com/languitar). I was having trouble with some of its python dependencies, thought aspects of it could be simplified for my limited use case and wanted to exercise my Rust programming, so here we are!
+It's more or less a port from Python to Rust of the [autosuspend](https://github.com/languitar/autosuspend/tree/main) AUR package by [languitar](https://github.com/languitar). I was having trouble with some of its python dependencies, thought aspects of it could be simplified for my limited use case and wanted to exercise my Rust programming, so here we are!
 
 It's behaviour is identical for the subset of its features that I have currently implemented.
 
