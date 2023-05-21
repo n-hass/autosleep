@@ -79,3 +79,5 @@ jobs:
           archive: $bin-${{ matrix.target }}
           ref: refs/tags/v${{ needs.release.outputs.version }}
           token: ${{ secrets.GITHUB_TOKEN }}
+          include: base,install.sh
+
