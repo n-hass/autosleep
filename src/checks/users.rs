@@ -50,7 +50,7 @@ impl CheckType for UsersCheck {
 		
 	}
 
-	fn getCheckName(&self) -> String {
+	fn get_check_name(&self) -> String {
 		return self.check_name.clone();
 	}
 }

@@ -1,4 +1,3 @@
-#![allow(non_snake_case)]
 use crate::checks::{CheckType};
 use std::collections::HashMap;
 use std::process::Command;
@@ -7,7 +6,7 @@ use tokio::time::{interval, Duration};
 
 use log::{info, error};
 
-fn parseConstantsForLoop(config: &HashMap<String, HashMap<String, Option<String>>>) -> (std::process::Command, u32, u32) {
+fn parse_constants(config: &HashMap<String, HashMap<String, Option<String>>>) -> (std::process::Command, u32, u32) {
 	let suspend_cmd_field = match config.get("general").unwrap().get("suspend_cmd") {
 		Some(suspend_cmd) => suspend_cmd,
 		None => {
@@ -77,7 +76,7 @@ fn parseConstantsForLoop(config: &HashMap<String, HashMap<String, Option<String>
 }
 
 pub async fn d_loop(checks: &Vec<Box<dyn CheckType>>, config: &HashMap<String, HashMap<String, Option<String>>>) {
-	let (mut suspend_cmd, interval_time, idle_limit) = parseConstantsForLoop(config);
+	let (mut suspend_cmd, interval_time, idle_limit) = parse_constants(config);
 
 	let mut idle_time: u32 = 0;
 	let mut interval = interval(Duration::from_secs(interval_time.into()));
@@ -87,7 +86,7 @@ pub async fn d_loop(checks: &Vec<Box<dyn CheckType>>, config: &HashMap<String, H
 
     for check in checks {
 			if check.run() {
-				successful_check = Some(check.getCheckName());
+				successful_check = Some(check.get_check_name());
 				break;
 			}
     }

@@ -1,7 +1,6 @@
-#![allow(non_snake_case)]
 pub trait CheckType {
   fn run(&self) -> bool;
-  fn getCheckName(&self) -> String;
+  fn get_check_name(&self) -> String;
 }
 
 pub mod users;

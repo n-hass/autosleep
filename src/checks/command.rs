@@ -19,7 +19,7 @@ impl CheckType for CommandCheck {
 		}
 	}
 
-	fn getCheckName(&self) -> String {
+	fn get_check_name(&self) -> String {
 		return self.check_name.clone();
 	}
 }
