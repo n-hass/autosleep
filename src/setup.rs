@@ -31,7 +31,7 @@ fn check_enabled_field(field: Option<&Option<String>>) -> bool {
 	};
 }
 
-fn create_command_check(config_section: &HashMap<String, Option<String>>) -> Option<Box<CommandCheck>> {
+fn create_command_check(config_section: &HashMap<String, Option<String>>, check_name: &str) -> Option<Box<CommandCheck>> {
 	if check_enabled_field(config_section.get("enabled")) == false {
 		return None;
 	}
@@ -48,6 +48,7 @@ fn create_command_check(config_section: &HashMap<String, Option<String>>) -> Opt
 		Some(command) => {
 			let mut command = Command::new(command);
 			let check = CommandCheck {
+				check_name: String::from(check_name),
 				command: Arc::new(Mutex::new(command))
 			};
 			return Some(Box::new(check));
@@ -59,7 +60,7 @@ fn create_command_check(config_section: &HashMap<String, Option<String>>) -> Opt
 	}
 }
 
-fn create_users_check(config_section: &HashMap<String, Option<String>>) -> Option<Box<UsersCheck>> {
+fn create_users_check(config_section: &HashMap<String, Option<String>>, check_name: &str) -> Option<Box<UsersCheck>> {
 	if check_enabled_field(config_section.get("enabled")) == false {
 		return None;
 	}
@@ -104,6 +105,7 @@ fn create_users_check(config_section: &HashMap<String, Option<String>>) -> Optio
 	let command = Command::new("who");
 
 	return Some(Box::new(UsersCheck {
+		check_name: String::from(check_name),
 		names: names,
 		hosts: hosts,
 		check_command: Arc::new(Mutex::new(command))
@@ -111,13 +113,14 @@ fn create_users_check(config_section: &HashMap<String, Option<String>>) -> Optio
 
 }
 
-pub fn create_checks( checks: &mut Vec<Box<dyn CheckFn>>, config: &HashMap<String, HashMap<String, Option<String>>> ) {
+pub fn create_checks( checks: &mut Vec<Box<dyn CheckType>>, config: &HashMap<String, HashMap<String, Option<String>>> ) {
 
 	for section in config.keys() {
 		// let section = section.to_string();
 		
 		// if the section key begins with "check.", create a check struct and add it to the vector
 		if section.starts_with("check.") {
+			let check_name = section.trim_start_matches("check.");
 			let check_section = config.get(section).unwrap();
 			let check_class = check_section.get("class").unwrap();
 			match check_class {
@@ -125,7 +128,7 @@ pub fn create_checks( checks: &mut Vec<Box<dyn CheckFn>>, config: &HashMap<Strin
 					match class.as_str() {
 
 						"Command" => {
-							match create_command_check(check_section) {
+							match create_command_check(check_section, check_name) {
 								Some(check) => {
 									checks.push(check);
 								},
@@ -133,7 +136,7 @@ pub fn create_checks( checks: &mut Vec<Box<dyn CheckFn>>, config: &HashMap<Strin
 							}
 						},
 						"Users" => {
-							match create_users_check(check_section) {
+							match create_users_check(check_section, check_name) {
 								Some(check) => {
 									checks.push(check);
 								},

@@ -55,7 +55,7 @@ async fn main() {
     }
   };
 
-  let mut checks: Vec<Box<dyn CheckFn>> = Vec::new();
+  let mut checks: Vec<Box<dyn CheckType>> = Vec::new();
 
   setup::create_checks(&mut checks, &config);
 

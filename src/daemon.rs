@@ -1,74 +1,110 @@
-use crate::checks::CheckFn;
+use crate::checks::{CheckType, command::CommandCheck};
 use std::collections::HashMap;
 use std::process::Command;
 
+use tokio::time::{interval, Duration, Instant};
+
 use log::{info, warn, error};
 
-pub async fn d_loop(checks: &Vec<Box<dyn CheckFn>>, config: &HashMap<String, HashMap<String, Option<String>>>) {
-	let suspend_cmd = match config.get("general").unwrap().get("suspend_cmd").unwrap() {
-		Some(cmd) => cmd,
+fn parseConstantsForLoop(config: &HashMap<String, HashMap<String, Option<String>>>) -> (std::process::Command, u32, u32) {
+	let suspend_cmd_field = match config.get("general").unwrap().get("suspend_cmd") {
+		Some(suspend_cmd) => suspend_cmd,
 		None => {
-			error!("No suspend command specified");
-			return;
+			error!("No suspend command field");
+			panic!();
 		}
 	};
-	let mut suspend_cmd = Command::new(suspend_cmd);
-	let interval = match config.get("general").unwrap().get("interval").unwrap() {
+	let mut suspend_cmd: Command = match suspend_cmd_field {
+		Some(cmd) => Command::new(cmd),
+		None => {
+			error!("No suspend command specified");
+			panic!();
+		}
+	};
+
+	let interval_field = match config.get("general").unwrap().get("interval") {
+		Some(interval) => interval,
+		None => {
+			error!("No interval field");
+			panic!();
+		}
+	};
+	let interval: u32 = match interval_field {
 		Some(interval) => {
 			match interval.parse::<u32>() {
 				Ok(interval) => interval,
 				Err(_) => {
 					error!("Invalid interval specified");
-					return;
+					panic!();
 				}
 			}
 		},
 		None => {
 			error!("No interval specified");
-			return;
+			panic!();
 		}
 	};
-	let idle_limit = match config.get("general").unwrap().get("idle_time").unwrap() {
+
+	let idle_field = match config.get("general").unwrap().get("idle_time") {
+		Some(idle_time) => idle_time,
+		None => {
+			error!("No idle time field");
+			panic!();
+		}
+	};
+	let idle_limit: u32 = match idle_field {
 		Some(idle_time) => {
 			match idle_time.parse::<u32>() {
 				Ok(idle_time) => idle_time,
 				Err(_) => {
 					error!("Invalid idle time specified");
-					return;
+					panic!();
 				}
 			}
 		},
 		None => {
 			error!("No idle time specified");
-			return;
+			panic!();
 		}
 	};
 
+	return (
+		suspend_cmd,
+		interval,
+		idle_limit
+	);
+}
+
+pub async fn d_loop(checks: &Vec<Box<dyn CheckType>>, config: &HashMap<String, HashMap<String, Option<String>>>) {
+	let (mut suspend_cmd, interval_time, idle_limit) = parseConstantsForLoop(config);
+
 	let mut idle_time: u32 = 0;
+	let mut interval = interval(Duration::from_secs(interval_time.into()));
 	loop {
-		let mut activity_flag = false;
-		for check in checks {
+		interval.tick().await;
+    let mut successful_check = None;
+
+    for check in checks {
 			if check.run() {
-				activity_flag = true;
+				successful_check = Some(check.getCheckName());
 				break;
 			}
-		}
-		if activity_flag {
+    }
+
+    if let Some(name) = successful_check {
+			info!("Check \"{}\" reports activity", name);
 			idle_time = 0;
-		} else {
-			idle_time += interval;
-		}
-		if idle_time >= idle_limit {
-			info!("Suspending");
-			match suspend_cmd.status() {
-				Ok(_) => {},
-				Err(_) => {
-					error!("Failed to suspend");
-				}
+    } else {
+			idle_time += interval_time;
+    }
+
+    if idle_time >= idle_limit {
+			info!("Idle time limit reached. Suspending ...");
+			idle_time = 0;
+			if suspend_cmd.status().is_err() {
+				error!("Failed to suspend");
 			}
-			idle_time = 0;
-		}
-		tokio::time::sleep(tokio::time::Duration::from_secs(interval.into())).await;
+    }
 	}
 
 }

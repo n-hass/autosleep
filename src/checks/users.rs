@@ -1,16 +1,17 @@
-use super::CheckFn;
+use super::CheckType;
 use std::process::Command;
 use std::str;
 use std::sync::{Arc, Mutex};
 use regex::Regex;
 
 pub struct UsersCheck {
+	pub check_name: String,
 	pub names: Vec<String>,
 	pub hosts: Vec<String>,
 	pub check_command: Arc<Mutex<Command>>
 }
 
-impl CheckFn for UsersCheck {
+impl CheckType for UsersCheck {
 	fn run(&self) -> bool {
 		let mut check_command_local = self.check_command.lock().unwrap();
 
@@ -47,6 +48,10 @@ impl CheckFn for UsersCheck {
 
 		return true;
 		
+	}
+
+	fn getCheckName(&self) -> String {
+		return self.check_name.clone();
 	}
 }
 
