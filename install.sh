@@ -7,7 +7,7 @@ cp target/release/autosleep /usr/local/bin/autosleep
 mkdir -p /etc/autosleep.d
 
 # copy the service file
-cp base/autosleep.service /lib/systemd/system/autosleep.service
+cp base/autosleep.service /usr/lib/systemd/system/autosleep.service
 
 # copy the config file
 cp base/autosleep.conf /etc/autosleep.d/autosleep.conf

@@ -77,7 +77,9 @@ fn create_users_check(config_section: &HashMap<String, Option<String>>, check_na
 	
 	let names = match names_field {
 		Some(names) => {
-			let names: Vec<String> = names.split(',').map(|s| s.to_string()).collect();
+			let names: Vec<String> = names.split(',').map(
+				|s| s.trim().to_string()
+			).collect();
 			names
 		},
 		None => {
@@ -94,7 +96,9 @@ fn create_users_check(config_section: &HashMap<String, Option<String>>, check_na
 			&default
 		}
 	};
-	let hosts: Vec<String> = hosts_field.as_ref().unwrap().split(',').map(|s| s.to_string()).collect();
+	let hosts: Vec<String> = hosts_field.as_ref().unwrap().split(',').map(
+		|s| s.trim().to_string()
+	).collect();
 
 	let terminals_field = match config_section.get("terminals") {
 		Some(terminals) => terminals,
@@ -103,7 +107,9 @@ fn create_users_check(config_section: &HashMap<String, Option<String>>, check_na
 			&default
 		}
 	};
-	let terminals: Vec<String> = terminals_field.as_ref().unwrap().split(',').map(|s| s.to_string()).collect();
+	let terminals: Vec<String> = terminals_field.as_ref().unwrap().split(',').map(
+		|s| s.trim().to_string()
+	).collect();
 
 	return Some(Box::new(UsersCheck {
 		check_name: String::from(check_name),
