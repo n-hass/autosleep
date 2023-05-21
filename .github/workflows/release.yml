@@ -39,8 +39,10 @@ jobs:
         id: check-tag
         shell: bash
         run: |
-          TAG_EXIST=$(curl -s https://api.github.com/repos/$GITHUB_REPOSITORY/git/ref/tags/${{ steps.pkg.outputs.VERSION }})
-          echo EXISTS=$([[ -z "$TAG_EXIST" ]] && echo "false" || echo "true") >> $GITHUB_OUTPUT
+          output=$(curl -s https://api.github.com/repos/$GITHUB_REPOSITORY/git/ref/tags/${{ steps.pkg.outputs.VERSION }})
+          message=$(echo "$output" | awk -F': ' '/"message":/ { gsub(/"/, "", $2); print $2; }' | tr -d ',')
+          echo EXISTS=$([ "$message" = "Not Found" ] && echo "false" || echo "true") >> $GITHUB_OUTPUT
+          echo $GITHUB_OUTPUT
       
       - name: Create a release
         uses: actions/create-release@v1
