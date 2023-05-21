@@ -46,7 +46,7 @@ fn create_command_check(config_section: &HashMap<String, Option<String>>, check_
 
 	match command_field {
 		Some(command) => {
-			let mut command = Command::new(command);
+			let command = Command::new(command);
 			let check = CommandCheck {
 				check_name: String::from(check_name),
 				command: Arc::new(Mutex::new(command))
@@ -115,9 +115,7 @@ fn create_users_check(config_section: &HashMap<String, Option<String>>, check_na
 
 pub fn create_checks( checks: &mut Vec<Box<dyn CheckType>>, config: &HashMap<String, HashMap<String, Option<String>>> ) {
 
-	for section in config.keys() {
-		// let section = section.to_string();
-		
+	for section in config.keys() {		
 		// if the section key begins with "check.", create a check struct and add it to the vector
 		if section.starts_with("check.") {
 			let check_name = section.trim_start_matches("check.");

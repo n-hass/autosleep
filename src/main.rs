@@ -1,9 +1,8 @@
 use std::path::PathBuf;
 use clap::{Parser};
 use configparser::ini::Ini;
-use std::error::Error;
 
-use log::{info, warn, debug, error, LevelFilter};
+use log::{debug, error, LevelFilter};
 use systemd_journal_logger::JournalLog;
 
 mod daemon;
@@ -45,9 +44,9 @@ async fn main() {
     error!("No config file at {:?}", config_path);
   }
   
-  let mut configFile = Ini::new();
+  let mut config_file = Ini::new();
 
-  let config = match configFile.load(config_path) {
+  let config = match config_file.load(config_path) {
     Ok(config) => config,
     Err(e) => {
       error!("Error loading config file: {}", e);

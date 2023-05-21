@@ -1,10 +1,10 @@
-use crate::checks::{CheckType, command::CommandCheck};
+use crate::checks::{CheckType};
 use std::collections::HashMap;
 use std::process::Command;
 
-use tokio::time::{interval, Duration, Instant};
+use tokio::time::{interval, Duration};
 
-use log::{info, warn, error};
+use log::{info, error};
 
 fn parseConstantsForLoop(config: &HashMap<String, HashMap<String, Option<String>>>) -> (std::process::Command, u32, u32) {
 	let suspend_cmd_field = match config.get("general").unwrap().get("suspend_cmd") {
@@ -14,7 +14,7 @@ fn parseConstantsForLoop(config: &HashMap<String, HashMap<String, Option<String>
 			panic!();
 		}
 	};
-	let mut suspend_cmd: Command = match suspend_cmd_field {
+	let suspend_cmd: Command = match suspend_cmd_field {
 		Some(cmd) => Command::new(cmd),
 		None => {
 			error!("No suspend command specified");
