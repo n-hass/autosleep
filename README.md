@@ -8,7 +8,10 @@ It's behaviour is identical for the subset of its features that I have currently
 Your defined activity checks will all be run together every set number of seconds defined in your configuration file. They will all be checked iteratively and will short circuit; if one check returns that the system is active, the remaining checks will be skipped.
 
 # Installation
-Clone this repo and run the `install.sh` script to build the binary application and install it, the systemd service and the configuration files with a couple demonstrative checks in the directory `/etc/autosleep.d/checks`.
+1. Clone this repo
+2. Build with `cargo build --release`
+3. Run `sudo install.sh`
+This will: build the binary application and move it to `/usr/local/bin`, install the systemd service and the configuration files with a couple demonstrative checks in the directory `/etc/autosleep.d/checks`.
 
 # Configuration
 Edit the file `/etc/autosleep.d/autosleep.conf` for changing the configuration. The configuration is almost a strict subset of [autosuspend's](https://autosuspend.readthedocs.io/en/v4.3.1/)
@@ -22,7 +25,7 @@ The `interval` value specifies how often to perform activity checks. Decreasing 
 The program will never suspend your system while you are using it, as long as your checks are configured to detect *your* definition of usage!
 
 ## Adding checks
-Currently **2** types of activity checks are implemented, being `Users` and `Command`.
+Currently **2** types of activity checks are implemented: `Users` and `Command`.
 
 `Users` checks can be added by adding a section to the config file and specifying `class = Users`. The `names`, `terminals` and `hosts` are comma seperated values that will be regex matched, so using `".*"` will match any. Only `names` is required, the other fields will default to `".*"`.
 

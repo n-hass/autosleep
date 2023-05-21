@@ -1,7 +1,10 @@
-cargo build --release
+if ! ls target/release/autosleep &> /dev/null; then
+	echo "Run the build command first:	cargo build --release"
+	exit 1
+fi
 
-# copy the binary
-cp target/release/autosleep /usr/local/bin/autosleep
+# move the binary
+mv -f target/release/autosleep /usr/local/bin/autosleep
 
 # make the directories needed
 mkdir -p /etc/autosleep.d

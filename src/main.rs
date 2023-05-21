@@ -19,9 +19,6 @@ struct Args {
 
   #[arg(long)]
   debug: bool,
-
-  #[arg(short = 'C', long)]
-  check_all: bool,
 }
 
 #[tokio::main]
@@ -55,7 +52,6 @@ async fn main() {
     log::set_max_level(LevelFilter::Info);
   }
   setup::install_logger(general_config);
-  log::info!("log test");
   
   let mut checks: Vec<Box<dyn CheckType>> = Vec::new();
 

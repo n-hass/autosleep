@@ -1,9 +1,9 @@
 [Unit]
-Description=A daemon to suspend your server in case of inactivity
+Description=A daemon to suspend the system when inactive
 After=network.target
 
 [Service]
-ExecStart=/usr/bin/autosleep -c /etc/autosleep.d/autosleep.conf
+ExecStart=/usr/local/bin/autosleep --config /etc/autosleep.d/autosleep.conf
 
 [Install]
 WantedBy=multi-user.target
