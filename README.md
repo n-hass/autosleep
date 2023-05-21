@@ -1,16 +1,12 @@
 # About
 This is a really lightweight program intended to run daemonised on Linux servers/PCs with systemd. It will perform configurable checks for activity on the system and, if the system has been idle long enough, will suspend the system.
 
-It's more or less a port from Python to Rust of the [autosuspend](https://github.com/languitar/autosuspend/tree/main) AUR package by [languitar](https://github.com/languitar). I was having trouble with some of its python dependencies, thought aspects of it could be simplified for my limited use case and wanted to exercise my Rust programming, so here we are!
-
-It's behaviour is identical for the subset of its features that I have currently implemented.
-
 Your defined activity checks will all be run together every set number of seconds defined in your configuration file. They will all be checked iteratively but will short circuit; if one check returns that the system is active, the remaining checks will be skipped.
 
 # Installation
 1. Clone this repo
 2. Build with `cargo build --release`
-3. Run `sudo install.sh`
+3. Run `sudo ./install.sh`
 
 This will: build the binary application and move it to `/usr/local/bin`, install the systemd service and the configuration files with a couple demonstrative checks in the directory `/etc/autosleep.d/checks`.
 
