@@ -51,7 +51,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag: v${{ steps.pkg.outputs.VERSION }}
-          name: Release v${{ steps.pkg.outputs.VERSION }}
+          name: v${{ steps.pkg.outputs.VERSION }}
           draft: false
           prerelease: false
 
@@ -66,6 +66,8 @@ jobs:
           - target: "x86_64-unknown-linux-gnu"
             os: "ubuntu-latest"
           - target: "x86_64-unknown-linux-musl"
+            os: "ubuntu-latest"
+          - target: "aarch64-unknown-linux-gnu"
             os: "ubuntu-latest"
     runs-on: ${{ matrix.os }}
     steps:
