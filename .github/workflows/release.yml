@@ -36,7 +36,7 @@ jobs:
           echo VERSION=$VERSION >> $GITHUB_OUTPUT
 
       - name: Check if this is a new release
-        id: check-tag
+        id: check_tag
         shell: bash
         run: |
           output=$(curl -s https://api.github.com/repos/$GITHUB_REPOSITORY/git/ref/tags/${{ steps.pkg.outputs.VERSION }})
@@ -45,13 +45,13 @@ jobs:
           echo $GITHUB_OUTPUT
       
       - name: Create a release
-        uses: actions/create-release@v1
-        if: steps.check-tag.outputs.EXISTS == 'false'
+        if: steps.check_tag.outputs.EXISTS == 'false'
+        uses: ncipollo/release-action@v1.12.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: v${{ steps.pkg.outputs.VERSION }}
-          release_name: Release v${{ steps.pkg.outputs.VERSION }}
+          tag: v${{ steps.pkg.outputs.VERSION }}
+          name: Release v${{ steps.pkg.outputs.VERSION }}
           draft: false
           prerelease: false
 
