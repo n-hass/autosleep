@@ -5,3 +5,4 @@ pub trait CheckType {
 
 pub mod users;
 pub mod command;
+pub mod parser;

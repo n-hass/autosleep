@@ -1,57 +1,53 @@
 use super::CheckType;
-use std::process::Command;
-use std::str;
-use std::sync::{Arc, Mutex};
 use regex::Regex;
+use log::{info};
+
+use crate::checks::parser;
 
 pub struct UsersCheck {
 	pub check_name: String,
 	pub names: Vec<String>,
 	pub hosts: Vec<String>,
-	pub check_command: Arc<Mutex<Command>>
+	pub terminals: Vec<String>,
 }
 
 impl CheckType for UsersCheck {
 	fn run(&self) -> bool {
-		let mut check_command_local = self.check_command.lock().unwrap();
+		
+		let users = parser::users();
 
+		// do a super inefficient search to check against the config
+		for user in users {
 
-		match check_command_local.output() {
-			Ok(output) => {
-				let output_str = str::from_utf8(&output.stdout).unwrap();
-				let lines: Vec<&str> = output_str.split('\n').collect();
-				
-				// use regex to search for each name in the line
-				let mut found = false;
-				for line in lines {
-					for name in &self.names {
-						let re_name = Regex::new(&format!("{}", name)).unwrap();
-						if re_name.is_match(line) {
-							for host in &self.hosts {
-								let re_host = Regex::new(&format!("{}", host)).unwrap();
-								if re_host.is_match(line) {
-									found = true;
-									break;
+			for name in &self.names {
+
+				let re = Regex::new(name).unwrap();
+				if re.is_match(&user.user().unwrap()) {
+					
+					for host in &self.hosts {
+						let re = Regex::new(host).unwrap();
+						if re.is_match(&user.host().unwrap()) {
+							
+							for terminal in &self.terminals {
+								let re = Regex::new(terminal).unwrap();
+								if re.is_match(&user.terminal().unwrap()) {
+									info!("User {} is logged in from {} on {}", user.user().unwrap(), user.host().unwrap(), user.terminal().unwrap());
+									return true;
 								}
 							}
+
 						}
 					}
-					if found {
-						break;
-					}
+
 				}
-			},
-			Err(_) => {
-				return false;
+
 			}
 		}
 
-		return true;
-		
+		return false;
 	}
 
 	fn get_check_name(&self) -> String {
 		return self.check_name.clone();
 	}
 }
-

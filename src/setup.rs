@@ -2,10 +2,12 @@ use crate::checks::*;
 use command::CommandCheck;
 use users::UsersCheck;
 use log::{warn, error};
+use systemd_journal_logger::JournalLog;
 
 use std::collections::HashMap;
 use std::process::Command;
 use std::sync::{Arc, Mutex};
+
 
 fn check_enabled_field(field: Option<&Option<String>>) -> bool {
 	let unwrapped = match field {
@@ -84,31 +86,30 @@ fn create_users_check(config_section: &HashMap<String, Option<String>>, check_na
 		}
 	};
 
+	let default = Some(String::from(".*"));
 	let hosts_field = match config_section.get("hosts") {
 		Some(hosts) => hosts,
 		None => {
-			error!("No hosts specified for Users check");
-			return None;
+			// because this is an optional filter, the default value is going to be to match any
+			&default
 		}
 	};
-	let hosts = match hosts_field {
-		Some(hosts) => {
-			let hosts: Vec<String> = hosts.split(',').map(|s| s.to_string()).collect();
-			hosts
-		},
-		None => {
-			error!("No hosts specified for check");
-			return None;
-		}
-	};
+	let hosts: Vec<String> = hosts_field.as_ref().unwrap().split(',').map(|s| s.to_string()).collect();
 
-	let command = Command::new("who");
+	let terminals_field = match config_section.get("terminals") {
+		Some(terminals) => terminals,
+		None => {
+			// because this is an optional filter, the default value is going to be to match any
+			&default
+		}
+	};
+	let terminals: Vec<String> = terminals_field.as_ref().unwrap().split(',').map(|s| s.to_string()).collect();
 
 	return Some(Box::new(UsersCheck {
 		check_name: String::from(check_name),
 		names: names,
 		hosts: hosts,
-		check_command: Arc::new(Mutex::new(command))
+		terminals: terminals
 	}));
 
 }
@@ -155,4 +156,67 @@ pub fn create_checks( checks: &mut Vec<Box<dyn CheckType>>, config: &HashMap<Str
 		}
 
 	}
+}
+
+pub fn install_logger(general_config: &HashMap<std::string::String, Option<std::string::String>>) {
+  match general_config.get("log_target") {
+    Some(log_target) => {
+      match log_target {
+        Some(log_target) => {
+          match log_target.as_str() {
+            "journal" => {
+              JournalLog::default().install().unwrap();
+            },
+            "stdout" => {
+              flexi_logger::Logger::try_with_str("info")  // adjust log level as needed
+                .unwrap()
+								.format(flexi_logger::colored_opt_format)
+                .log_to_stdout()
+                .start()
+                .unwrap();
+            },
+            _ => {
+              let mut dir = std::path::Path::new(log_target);
+              if dir.is_file() {
+                dir = dir.parent().unwrap();
+              }
+              // log to the path provided
+              flexi_logger::Logger::try_with_str("info")  // adjust log level as needed
+                .unwrap()
+								.format(flexi_logger::opt_format)
+                .log_to_file(
+                  flexi_logger::FileSpec::default()
+                    .directory(dir)
+                    .basename("autosleep")
+                    .suffix("log")
+                    .suppress_timestamp()
+                )  // adjust FileSpec as needed
+                .start()
+                .unwrap();
+            }
+          }
+        },
+        None => {
+          flexi_logger::Logger::try_with_str("info")  // adjust log level as needed
+            .unwrap()
+						.format(flexi_logger::colored_opt_format)
+            .log_to_stdout()
+            .start()
+            .unwrap();
+
+          warn!("No log target specified, assumed stdout");
+        }
+      }
+    },
+    None => {
+      flexi_logger::Logger::try_with_str("info")  // adjust log level as needed
+				.unwrap()
+				.format(flexi_logger::colored_opt_format)
+				.log_to_stdout()
+				.start()
+				.unwrap();
+
+			warn!("No field \"log_target\" in the config file, assumed stdout");
+    }
+  }
 }

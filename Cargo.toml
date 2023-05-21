@@ -8,6 +8,7 @@ edition = "2021"
 [dependencies]
 clap = { version = "4.2.7", features = ["derive"] }
 configparser = "3.0.2"
+flexi_logger = "0.25.4"
 lazy_static = "1.4.0"
 log = "0.4.17"
 regex = "1.8.1"
