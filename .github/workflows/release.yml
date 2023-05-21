@@ -2,7 +2,7 @@ name: Release
 
 permissions:
   contents: write
-  
+
 on:
   push:
     branches:
@@ -33,25 +33,23 @@ jobs:
         shell: "bash"
         run: |
           VERSION=$(awk -F ' = ' '$1 ~ /version/ { gsub(/["]/, "", $2); printf("%s",$2) }' Cargo.toml)
-          echo ::set-output name=version::$(echo $VERSION)
           echo VERSION=$VERSION >> $GITHUB_OUTPUT
 
       - name: Check if this is a new release
         id: check-tag
         shell: bash
         run: |
-          TAG_EXIST=$(curl -s https://api.github.com/repos/$GITHUB_REPOSITORY/git/ref/tags/${{ steps.vars.outputs.tag }})
-          echo ::set-output name=exists::$([[ -z "$TAG_EXIST" ]] && echo "false" || echo "true")
+          TAG_EXIST=$(curl -s https://api.github.com/repos/$GITHUB_REPOSITORY/git/ref/tags/${{ steps.pkg.outputs.VERSION }})
           echo EXISTS=$([[ -z "$TAG_EXIST" ]] && echo "false" || echo "true") >> $GITHUB_OUTPUT
       
       - name: Create a release
         uses: actions/create-release@v1
-        if: steps.check-tag.outputs.exists == 'false'
+        if: steps.check-tag.outputs.EXISTS == 'false'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: v${{ steps.pkg.outputs.version }}
-          release_name: Release ${{ steps.pkg.outputs.version }}
+          tag_name: v${{ steps.pkg.outputs.VERSION }}
+          release_name: Release v${{ steps.pkg.outputs.VERSION }}
           draft: false
           prerelease: false
 
