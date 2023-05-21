@@ -1,12 +1,19 @@
 #!/bin/bash
 
-if ! ls target/release/autosleep &> /dev/null; then
-	echo "Run the build script first:	build.sh"
+APP_PATH=""
+if ls autosleep &> /dev/null; then
+	APP_PATH="autosleep"
+fi
+if ls target/release/autosleep &> /dev/null; then
+	cargo build --release && APP_PATH="target/release/autosleep"
+fi
+if [ -z "$APP_PATH" ]; then
+	echo "no autosleep binary found"
 	exit 1
 fi
 
 # move the binary
-mv -f target/release/autosleep /usr/local/bin/autosleep
+mv -f $APP_PATH /usr/local/bin/autosleep
 
 # make the directories needed
 mkdir -p /etc/autosleep.d

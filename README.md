@@ -4,7 +4,7 @@ This is a really lightweight program intended to run daemonised on Linux servers
 Your defined activity checks will all be run together every set number of seconds defined in your configuration file. They will all be checked iteratively but will short circuit; if one check returns that the system is active, the remaining checks will be skipped.
 
 # Installation
-1. Clone this repo
+1. Clone the repo
 2. Build with `./build.sh`
 3. Install with `sudo ./install.sh`
 
@@ -32,5 +32,5 @@ By default, the program will log basic info about the checks to the system journ
 - [ ] Scheduling a wake-up
 - [ ] Documentation
 - [ ] Unit tests
-- [ ] Releases contain builds
+- [x] Releases contain builds
 - [ ] Publish on package managers
