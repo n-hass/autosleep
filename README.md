@@ -45,4 +45,5 @@ After installation, start and enable the systemd service with `systemctl enable 
   - [ ] X11 idle detection
 - [ ] Scheduling a wake-up
 - [ ] Documentation
+- [ ] Unit tests
 - [ ] Publish on package managers
