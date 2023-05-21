@@ -56,7 +56,7 @@ jobs:
           prerelease: false
 
   build:
-    name: "Build Targets And Upload"
+    name: "Build And Upload"
     if: needs.release.outputs.exists == 'false'
     needs: 
       - release
@@ -71,7 +71,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: "Upload Binaries"
+      - name: "Build target"
         uses: "taiki-e/upload-rust-binary-action@v1"
         with:
           bin: "autosleep"

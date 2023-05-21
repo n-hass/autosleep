@@ -2,6 +2,7 @@
 
 APP_PATH=""
 if ls autosleep &> /dev/null; then
+	chmod +x autosleep
 	APP_PATH="autosleep"
 fi
 if ls target/release/autosleep &> /dev/null; then
@@ -11,6 +12,10 @@ if [ -z "$APP_PATH" ]; then
 	echo "no autosleep binary found"
 	exit 1
 fi
+
+for i in $(ls base/checks); do
+	chmod +x base/checks/$i
+done
 
 # move the binary
 mv -f $APP_PATH /usr/local/bin/autosleep
