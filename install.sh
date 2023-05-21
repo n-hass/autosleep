@@ -1,5 +1,7 @@
+#!/bin/bash
+
 if ! ls target/release/autosleep &> /dev/null; then
-	echo "Run the build command first:	cargo build --release"
+	echo "Run the build script first:	build.sh"
 	exit 1
 fi
 

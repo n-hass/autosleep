@@ -16,7 +16,7 @@ impl CheckType for UsersCheck {
 		
 		let users = parser::users();
 
-		// do a super inefficient search to check against the config
+		// do a super inefficient search to check against the configured filters
 		for user in users {
 
 			for name in &self.names {

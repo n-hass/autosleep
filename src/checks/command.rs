@@ -9,9 +9,13 @@ pub struct CommandCheck {
 impl CheckType for CommandCheck {
 	fn run(&self) -> bool {
 		let mut command_local = self.command.lock().unwrap();
-		match command_local.status() {
+		match command_local.output() {
 			Ok(output) => {
-				return output.success();
+				if output.status.success() {
+					log::info!("Check \"{}\" reports activity", self.check_name);
+					return true;
+				}
+				return false;
 			},
 			Err(_) => {
 				return false;

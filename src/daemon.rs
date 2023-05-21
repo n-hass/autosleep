@@ -15,7 +15,16 @@ fn parse_constants(config: &HashMap<String, HashMap<String, Option<String>>>) ->
 		}
 	};
 	let suspend_cmd: Command = match suspend_cmd_field {
-		Some(cmd) => Command::new(cmd),
+		Some(cmd) => {
+		
+			let mut parts = cmd.split_whitespace();
+			let program = parts.next().unwrap();
+			let mut command: Command = Command::new(program);
+			command.args(parts);
+			
+			command
+
+		},
 		None => {
 			error!("No suspend command specified");
 			panic!();
@@ -82,17 +91,16 @@ pub async fn d_loop(checks: &Vec<Box<dyn CheckType>>, config: &HashMap<String, H
 	let mut interval = interval(Duration::from_secs(interval_time.into()));
 	loop {
 		interval.tick().await;
-    let mut successful_check = None;
-
+		
+    let mut successful_check = false;
     for check in checks {
 			if check.run() {
-				successful_check = Some(check.get_check_name());
+				successful_check = true;
 				break;
 			}
     }
 
-    if let Some(name) = successful_check {
-			info!("Check \"{}\" reports activity", name);
+    if successful_check {
 			idle_time = 0;
     } else {
 			idle_time += interval_time;

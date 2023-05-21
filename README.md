@@ -5,8 +5,8 @@ Your defined activity checks will all be run together every set number of second
 
 # Installation
 1. Clone this repo
-2. Build with `cargo build --release`
-3. Run `sudo ./install.sh`
+2. Build with `./build.sh`
+3. Install with `sudo ./install.sh`
 
 This will: build the binary application and move it to `/usr/local/bin`, install the systemd service and the configuration files with a couple demonstrative checks in the directory `/etc/autosleep.d/checks`.
 

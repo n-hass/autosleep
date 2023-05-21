@@ -47,8 +47,12 @@ fn create_command_check(config_section: &HashMap<String, Option<String>>, check_
 	};
 
 	match command_field {
-		Some(command) => {
-			let command = Command::new(command);
+		Some(cmd) => {
+			let mut parts = cmd.split_whitespace();
+			let program = parts.next().unwrap();
+			let mut command: Command = Command::new(program);
+			command.args(parts);
+
 			let check = CommandCheck {
 				check_name: String::from(check_name),
 				command: Arc::new(Mutex::new(command))
