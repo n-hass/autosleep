@@ -17,7 +17,8 @@ impl CheckType for CommandCheck {
 				}
 				return false;
 			},
-			Err(_) => {
+			Err(e) => {
+				log::error!("Error running check \"{}\": {}", self.check_name, e);
 				return false;
 			}
 		}
