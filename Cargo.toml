@@ -12,3 +12,8 @@ log = "0.4.17"
 regex = "1.8.1"
 systemd-journal-logger = "1.0.0"
 tokio = { version = "1.28.1", features = ["full"] }
+
+[profile.release]
+opt-level = 3
+lto = "fat"
+codegen-units = 1

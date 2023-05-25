@@ -12,7 +12,7 @@ impl CheckType for CommandCheck {
 		match command_local.output() {
 			Ok(output) => {
 				if output.status.success() {
-					log::info!("Check \"{}\" reports activity", self.check_name);
+					log::debug!("Check \"{}\" reports activity", self.check_name);
 					return true;
 				}
 				return false;

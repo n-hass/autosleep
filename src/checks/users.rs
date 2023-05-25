@@ -1,6 +1,5 @@
 use super::CheckType;
 use regex::Regex;
-use log::{info};
 
 use crate::checks::parser;
 
@@ -31,7 +30,7 @@ impl CheckType for UsersCheck {
 							for terminal in &self.terminals {
 								let re = Regex::new(terminal).unwrap();
 								if re.is_match(&user.terminal().unwrap()) {
-									info!("User {} is logged in from {} on {}", user.user().unwrap(), user.host().unwrap(), user.terminal().unwrap());
+									log::debug!("User {} is logged in from {} on {}", user.user().unwrap(), user.host().unwrap(), user.terminal().unwrap());
 									return true;
 								}
 							}
